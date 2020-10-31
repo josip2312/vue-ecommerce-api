@@ -29,15 +29,24 @@ const getSingleProduct = asyncHandler(async (req, res, next) => {
 // @route   POST /products
 // @access  Private/Admin
 const createProduct = asyncHandler(async (req, res) => {
+	const {
+		name,
+		price,
+		description,
+		image,
+		brand,
+		category,
+		inStock,
+	} = req.body;
 	const product = new Product({
-		user: req.body.id,
-		name: 'Sample name',
-		description: 'Sample description',
-		image: '/images/sample.jpg',
-		category: 'Sample category',
-		brand: 'Sample brand',
-		price: 0,
-		inStock: 0,
+		user: req.user._id,
+		name,
+		price,
+		description,
+		category,
+		image,
+		brand,
+		inStock,
 		numReviews: 0,
 	});
 

@@ -4,10 +4,13 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const morgan = require('morgan');
+const path = require('path');
 
 const errorMiddleware = require('./middleware/errorMiddleware');
 const userRoutes = require('./routes/userRoutes');
 const productRoutes = require('./routes/productRoutes');
+const orderRoutes = require('./routes/orderRoutes');
+const uploadRoutes = require('./routes/uploadRoutes');
 
 dotenv.config();
 
@@ -19,7 +22,10 @@ app.use(bodyParser.json());
 //routes
 app.use('/users', userRoutes);
 app.use('/products', productRoutes);
+app.use('/orders', orderRoutes);
+app.use('/uploads', uploadRoutes);
 
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 //middleware
 app.use(morgan('dev'));
 app.use(errorMiddleware.notFound);

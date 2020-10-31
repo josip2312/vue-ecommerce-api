@@ -7,7 +7,7 @@ const User = require('../models/User');
 // @access  Public
 const loginUser = asyncHandler(async (req, res) => {
 	const { email, password } = req.body;
-	console.log('aa');
+
 	const user = await User.findOne({ email });
 
 	if (user && (await user.matchPassword(password))) {
@@ -79,11 +79,11 @@ const getUser = asyncHandler(async (req, res, next) => {
 });
 
 // @desc    Update a user by id
-// @route   GET /users/:id
+// @route   PUT /users/profile
 // @access  Private
-const updateUser = asyncHandler(async (req, res, next) => {
-	const id = req.params.id;
-	const user = await User.findById(id);
+const updateUserProfile = asyncHandler(async (req, res, next) => {
+	const user = await User.findById(req.user._id);
+
 	if (!user) {
 		res.status(400);
 		throw new Error('User not found');
@@ -102,6 +102,63 @@ const updateUser = asyncHandler(async (req, res, next) => {
 		name: updatedUser.name,
 		email: updatedUser.email,
 		isAdmin: updatedUser.isAdmin,
+		token: generateToken(updatedUser._id),
 	});
 });
-module.exports = { loginUser, registerUser, getUser, updateUser };
+// @desc    Get all users
+// @route   GET /users
+// @access  Private/Admin
+const getUsers = asyncHandler(async (req, res) => {
+	const users = await User.find({});
+	res.json(users);
+});
+
+// @desc    Delete user
+// @route   DELETE /users/:id
+// @access  Private/Admin
+const deleteUser = asyncHandler(async (req, res) => {
+	const user = await User.findById(req.params.id);
+
+	if (user) {
+		await user.remove();
+		res.json({ message: 'User removed' });
+	} else {
+		res.status(404);
+		throw new Error('User not found');
+	}
+});
+
+// @desc    Update user
+// @route   PUT /users/:id
+// @access  Private/Admin
+const updateUser = asyncHandler(async (req, res) => {
+	const user = await User.findById(req.params.id);
+
+	if (user) {
+		user.name = req.body.name || user.name;
+		user.email = req.body.email || user.email;
+		user.isAdmin = req.body.isAdmin;
+
+		const updatedUser = await user.save();
+		const { _id, name, email, isAdmin } = updatedUser;
+		res.json({
+			_id,
+			name,
+			email,
+			isAdmin,
+		});
+	} else {
+		res.status(404);
+		throw new Error('User not found');
+	}
+});
+
+module.exports = {
+	loginUser,
+	registerUser,
+	getUser,
+	updateUserProfile,
+	getUsers,
+	deleteUser,
+	updateUser,
+};
