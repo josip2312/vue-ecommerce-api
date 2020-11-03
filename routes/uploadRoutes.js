@@ -38,7 +38,6 @@ const upload = multer({
 });
 
 router.post('/', upload.single('image'), (req, res) => {
-	console.log(`${process.env.BASE_URL}/${req.file.path}`);
 	res.send(`${process.env.BASE_URL}/${req.file.path}`);
 });
 

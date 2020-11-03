@@ -36,7 +36,7 @@ const createOrder = asyncHandler(async (req, res) => {
 });
 
 // @desc    Get order by ID
-// @route   GET /orders/:id
+// @route   GET /orders/order/:id
 // @access  Private
 const getOrderById = asyncHandler(async (req, res) => {
 	const order = await Order.findById(req.params.id).populate(

@@ -6,11 +6,11 @@ const router = express.Router();
 
 router.get('/', protect, admin, ordersController.getOrders);
 
-router.get('/:id', protect, ordersController.getOrderById);
+router.get('/order/:id', protect, ordersController.getOrderById);
 
 router.get('/myorders', protect, ordersController.getMyOrders);
 
-router.post('/', protect, admin, ordersController.createOrder);
+router.post('/', protect, ordersController.createOrder);
 
 router.put('/:id/pay', protect, ordersController.updateOrderToPaid);
 
