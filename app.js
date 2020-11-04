@@ -1,5 +1,5 @@
 const express = require('express');
-const dotenv = require('dotenv');
+require('dotenv').config();
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const mongoose = require('mongoose');
@@ -12,8 +12,6 @@ const productRoutes = require('./routes/productRoutes');
 const orderRoutes = require('./routes/orderRoutes');
 const uploadRoutes = require('./routes/uploadRoutes');
 
-dotenv.config();
-
 const app = express();
 //config middleware
 app.use(cors());
@@ -24,6 +22,10 @@ app.use('/users', userRoutes);
 app.use('/products', productRoutes);
 app.use('/orders', orderRoutes);
 app.use('/uploads', uploadRoutes);
+
+app.get('/api/config/paypal', (req, res) =>
+	res.send(process.env.PAYPAL_CLIENT_ID),
+);
 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 //middleware
