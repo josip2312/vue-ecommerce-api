@@ -8,7 +8,7 @@ router.get('/', productController.getProducts);
 
 router.get('/:id', productController.getSingleProduct);
 
-router.get('/top', productController.getTopProducts);
+router.get('/all/top', productController.getTopProducts);
 
 router.post('/', protect, admin, productController.createProduct);
 

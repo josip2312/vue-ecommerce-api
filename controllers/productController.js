@@ -5,9 +5,15 @@ const Product = require('../models/Product');
 // @route   GET /products
 // @access  Public
 const getProducts = asyncHandler(async (req, res, next) => {
-	const products = await Product.find();
+	const pageSize = 9;
+	const page = Number(req.query.pageNumber) || 1;
 
-	res.status(200).json(products);
+	const count = await Product.countDocuments({});
+	const products = await Product.find({})
+		.limit(pageSize)
+		.skip(pageSize * (page - 1));
+
+	res.json({ products, page, pages: Math.ceil(count / pageSize) });
 });
 
 // @desc    Fetch single product
@@ -144,10 +150,10 @@ const createProductReview = asyncHandler(async (req, res) => {
 });
 
 // @desc    Get top rated products
-// @route   GET /products/top
+// @route   GET /products/all//top
 // @access  Public
 const getTopProducts = asyncHandler(async (req, res) => {
-	const products = await Product.find({}).sort({ rating: -1 }).limit(5);
+	const products = await Product.find({}).sort({ rating: -1 }).limit(3);
 
 	res.json(products);
 });
