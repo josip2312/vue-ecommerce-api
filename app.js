@@ -6,6 +6,9 @@ const mongoose = require('mongoose');
 const morgan = require('morgan');
 const path = require('path');
 
+const compression = require('compression');
+const helmet = require('helmet');
+
 const errorMiddleware = require('./middleware/errorMiddleware');
 const userRoutes = require('./routes/userRoutes');
 const productRoutes = require('./routes/productRoutes');
@@ -16,6 +19,9 @@ const app = express();
 //config middleware
 app.use(cors());
 app.use(bodyParser.json());
+//production middleware
+app.use(compression());
+app.use(helmet());
 
 //routes
 app.use('/users', userRoutes);
