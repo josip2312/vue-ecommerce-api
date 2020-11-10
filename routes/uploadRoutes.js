@@ -4,7 +4,12 @@ const multer = require('multer');
 const router = express.Router();
 require('dotenv').config();
 
-const storage = multer.diskStorage({
+const sharp = require('sharp');
+const googleStorage = require('../config/');
+
+const storage = multer.memoryStorage();
+
+/* const storage = multer.diskStorage({
 	destination(req, file, cb) {
 		cb(null, 'uploads/');
 	},
@@ -14,7 +19,7 @@ const storage = multer.diskStorage({
 			`${file.fieldname}-${Date.now()}${path.extname(file.originalname)}`,
 		);
 	},
-});
+}); */
 
 function checkFileType(file, cb) {
 	const filetypes = /jpg|jpeg|png/;
@@ -38,7 +43,25 @@ const upload = multer({
 });
 
 router.post('/', upload.single('image'), (req, res) => {
-	res.send(`${process.env.BASE_URL}/${req.file.path}`);
+	const file = req.file;
+
+	try {
+		const bucket = googleStorage.bucket('student_rides_images');
+		const blob = bucket.file(file.originalname);
+		const remoteWriteStream = blob.createWriteStream();
+		sharp(file.buffer)
+			.resize({ width: 600 })
+			.pipe(remoteWriteStream)
+			.on('error', () => {
+				throw new Error('Error while uploading image');
+			})
+			.on('finish', async () => {
+				const publicUrl = `https://storage.googleapis.com/${bucket.name}/${blob.name}`;
+				res.send(publicUrl);
+			});
+	} catch (error) {
+		next(error);
+	}
 });
 
 module.exports = router;
